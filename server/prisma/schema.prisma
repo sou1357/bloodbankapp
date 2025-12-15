@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  name          String
+  email         String       @unique
+  password      String
+  role          String
+  profile_image String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  organizationProfile OrganizationProfile?
+  donorProfile        DonorProfile?
+}
+
+model OrganizationProfile {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique
+  organizationType   String
+  license_number     String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DonorProfile {
+  id                 Int       @id @default(autoincrement())
+  userId             Int       @unique
+  blood_group        String
+  last_donation_date DateTime?
+  is_eligible        Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
